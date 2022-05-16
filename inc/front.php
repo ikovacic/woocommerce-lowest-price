@@ -117,7 +117,7 @@ class Front {
 
         }
 
-        // WooCommerce by default doesn't show that item is on sale if “regular” price was lower than new
+        // WooCommerce by default doesn't show that item is on sale if “regular” price was lower than “sale” price
         if( $regular_price != $sale_price ) {
             $on_sale = true;
         }
