@@ -6,7 +6,7 @@ Postoje i tumačenje da postoji izuzeće za prodaju na daljinu, ali još uvijek 
 
 **Ranije su web trgovine za vrijeme akcija prikazivale:**
 
-- Redovnu cijneu
+- Redovnu cijenu
 - Sniženu cijenu
 
 **Sada trebaju prikazivati:**
@@ -14,12 +14,14 @@ Postoje i tumačenje da postoji izuzeće za prodaju na daljinu, ali još uvijek 
 - Najnižu cijenu u zadnjih 30 dana
 - Sniženu cijenu
 
+**Važno:** ovisni o promjenama cijene, može se dogoditi da prekrižena cijena (tj. najniža u zadnjih 30 dana) bude ista ili niža od aktualne. U slučaju pogrešno unešene cijene, potrebno je obrisati redak u wp_price_history tablici.
+
 
 ## Kako radi plugin?
 
 Prilikom svake promjene cijene zapisuje se aktualna cijena u zasebnu tablicu zajedno s trajanjem od-do. Prilikom prikaza cijene za proizvode na akciji, dohvaća se najniža cijena u zadnjih 30 dana.
 
-**Važno:** plugin ne zna za povijest cijena pa će se povijest izmjena početi stvarati nakon prvih updateova. Kao najnižu cijenu u zadnjih 30 dana, ukoliko ne postoji niti jedna druga cijena, uzima se redovna cijena.
+**Važno:** plugin ne zna za povijest cijena pa će se povijest izmjena početi stvarati nakon što se proizvodi / varijante ažuriraju prvi put. Kao najnižu cijenu u zadnjih 30 dana, ukoliko ne postoji niti jedna druga cijena, uzima se redovna cijena.
 
 Plugin funkcionira za:
 

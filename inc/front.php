@@ -10,13 +10,9 @@ class Front {
     public function __construct() {
 
 
-        add_filter( 'woocommerce_product_is_on_sale', array( $this, 'is_on_sale' ), 10, 2 );
-
         if( WPLP_DISPLAY_TYPE == 'regular' ) {
 
-            add_filter( 'woocommerce_product_get_regular_price', array( $this, 'custom_price' ), 10, 2 );
-
-            add_filter( 'woocommerce_product_variation_get_regular_price', array( $this, 'custom_price' ), 10, 2 );
+            add_filter( 'woocommerce_get_price_html', array( $this, 'get_price_html' ), 10, 2 );
 
         } elseif( WPLP_DISPLAY_TYPE == 'alt' ) {
 
@@ -49,6 +45,24 @@ class Front {
         }
 
         return $price;
+    }
+
+    public function get_price_html( $price_html, $product ) {
+
+        if( is_admin() || $product->get_type() == 'variable' ) {
+            return $price_html;
+        }
+
+        if ( '' === $product->get_price() ) {
+            $price_html = apply_filters( 'woocommerce_empty_price_html', '', $product );
+        } elseif ( $product->is_on_sale() ) {
+            $regular_price = $this->get_lowest_price( $product );
+            $price_html = wc_format_sale_price( wc_get_price_to_display( $product, array( 'price' => $regular_price ) ), wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+        } else {
+            $price_html = wc_price( wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+        }
+
+        return $price_html;
     }
 
     public function display_lowest_price_in_meta() { 
@@ -87,51 +101,6 @@ class Front {
         }
 
         echo '<span class="lowest_price">' . sprintf( __( 'Lowest price in last 30 days: %s', 'lowest-price' ), $price ) . '</span>';
-    }
-
-    public function custom_price( $price, $object ) {
-
-        if( is_admin() || !$object->is_on_sale( 'lowest_price' ) ) {
-            return $price;
-        }
-
-        return $this->get_lowest_price( $object );
-    }
-
-    public function is_on_sale( $on_sale, $product ) {
-
-        if( is_admin() ) {
-            return $on_sale;
-        }
-
-        if( $product->get_type() == 'variable' ) {
-
-            $prices = $product->get_variation_prices();
-            $regular_price = $prices['regular_price'];
-            $sale_price = $prices['sale_price'];
-
-        } else {
-
-            $regular_price = $product->get_regular_price();
-            $sale_price = $product->get_price();
-
-        }
-
-        // WooCommerce by default doesn't show that item is on sale if “regular” price was lower than “sale” price
-        if( $regular_price != $sale_price ) {
-            $on_sale = true;
-        }
-
-        if( $product->get_date_on_sale_from() && $product->get_date_on_sale_from()->getTimestamp() > time() ) {
-            $on_sale = false;
-        }
-
-        if( $product->get_date_on_sale_to() && $product->get_date_on_sale_to()->getTimestamp() < time() ) {
-            $on_sale = false;
-        }
-
-        return $on_sale;
-
     }
 
     public function wp_enqueue_style() {
