@@ -37,7 +37,7 @@ class Front {
 
         $ts_30_days_ago = time() - 30 * 24 * 60 * 60;
 
-        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end > %d ORDER BY price ASC", $object->get_id(), $ts_30_days_ago ), ARRAY_A ) ) {
+        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end > %d ORDER BY price ASC LIMIT 0, 1", $object->get_id(), $ts_30_days_ago ), ARRAY_A ) ) {
 
             if( $result['price'] < $price ) {
                 $price = $result['price'];

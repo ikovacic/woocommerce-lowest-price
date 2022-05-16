@@ -48,4 +48,4 @@ Testovi su rađeni na clean instalaciji:
 
 ali ne bi trebalo biti problema niti s drugim verzijama i temama.
 
-Ukoliko koristite specifične pluginove poput Subscriptiona ili customizirane teme, postoji mogućnost da ćete trebati prilagoditi plugin.
+Ukoliko koristite specifične pluginove poput Subscriptiona ili customizirane teme, postoji mogućnost da ćete trebati prilagoditi plugin. Također, potrebno je pripaziti ukoliko cijene updateate izravno kroz bazu (npr. prilikom spajanja na vanjski ERP).

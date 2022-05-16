@@ -116,6 +116,9 @@ class Lowest_Price {
         add_action( 'woocommerce_update_product', array( $this, 'product_update' ) );
         add_action( 'woocommerce_update_product_variation', array( $this, 'variation_update' ) );
 
+        add_action( 'woocommerce_before_product_object_save', array( $this, 'object_before_update' ) );
+        add_action( 'woocommerce_before_variation_object_save', array( $this, 'object_before_update' ) );
+
     }
 
     public function variation_update( $variation_id ) {
@@ -155,6 +158,26 @@ class Lowest_Price {
                 "product_id" => $variation_id,
                 "price" => $new_price,
                 "timestamp" => time(),
+            ));
+
+        }
+
+    }
+
+    public function object_before_update( $object ) {
+
+        if( $object->get_type() == 'variable' ) {
+            return;
+        }
+
+        global $wpdb;
+
+        if( !$wpdb->get_row( $wpdb->prepare( "SELECT price_history_id FROM {$wpdb->prefix}price_history WHERE product_id = %d LIMIT 0, 1", $object->get_id() ), ARRAY_A ) ) {
+
+            $wpdb->insert("{$wpdb->prefix}price_history", array(
+                "product_id" => $object->get_id(),
+                "price" => $object->get_price(),
+                "timestamp" => 0,
             ));
 
         }
