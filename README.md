@@ -1,4 +1,4 @@
-# WooCommerce Najniža cijena u zadnjih 30 dana
+# WooCommerce - Najniža cijena u zadnjih 30 dana
 
 Prema izmjenama zakona o zaštiti potrošača koje nastupaju na snagu 28.5.2022. prilikom akcija je potrebno iskazivati najnižu cijenu u zadnjih 30 dana za određeni proizvod.
 
