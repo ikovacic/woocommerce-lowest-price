@@ -2,8 +2,6 @@
 
 Prema izmjenama zakona o zaštiti potrošača koje nastupaju na snagu 28.5.2022. prilikom akcija je potrebno iskazivati najnižu cijenu u zadnjih 30 dana za određeni proizvod.
 
-Postoje i tumačenje da postoji izuzeće za prodaju na daljinu, ali još uvijek nije potvrđeno.
-
 **Ranije su web trgovine za vrijeme akcija prikazivale:**
 
 - Redovnu cijenu
