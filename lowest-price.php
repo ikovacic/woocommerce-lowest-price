@@ -17,6 +17,10 @@ if ( ! defined( 'WPLP_DISPLAY_TYPE' ) ) {
     define( 'WPLP_DISPLAY_TYPE', 'regular' );
 }
 
+if ( ! defined( 'WPLP_CALCULATE_TYPE' ) ) {
+    define( 'WPLP_CALCULATE_TYPE', 'regular' );
+}
+
 class Lowest_Price {
 
     private $min_php = '5.6.0';

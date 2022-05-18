@@ -28,12 +28,37 @@ Plugin funkcionira za:
 - Jednostavne proizvode
 - Varijabilne proizvode
 
-## Prikaz na listingu
+Ukoliko želite dohvaćati cijenu za 30 dana od zadnje promjene cijene, u wp-config.php dodati liniju:
+```
+define( 'WPLP_CALCULATE_TYPE', 'last_change' );
+```
 
-![alt text](https://api.applause.hr/lowest-price/listing.png "Listing")
 
-## Prikaz na single proizvodu
-![alt text](https://api.applause.hr/lowest-price/single.png "Single")
+## Defaultni prikaz
+
+![alt text](https://api.applause.hr/lowest-price/01-regular-listing.png "Listing")
+
+![alt text](https://api.applause.hr/lowest-price/02-regular-single.png "Single")
+
+## Tekstualni prikaz
+
+U wp-config.php dodati liniju:
+```
+define( 'WPLP_DISPLAY_TYPE', 'text' );
+```
+
+![alt text](https://api.applause.hr/lowest-price/03-text-listing.png "Listing")
+
+![alt text](https://api.applause.hr/lowest-price/04-text-single.png "Single")
+
+## Alternativni prikaz
+
+U wp-config.php dodati liniju:
+```
+define( 'WPLP_DISPLAY_TYPE', 'alt' );
+```
+
+![alt text](https://api.applause.hr/lowest-price/05-alt-single.png "Single")
 
 ## Bugovi
 

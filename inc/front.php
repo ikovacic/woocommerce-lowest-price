@@ -9,16 +9,15 @@ class Front {
 
     public function __construct() {
 
-
-        if( WPLP_DISPLAY_TYPE == 'regular' ) {
-
-            add_filter( 'woocommerce_get_price_html', array( $this, 'get_price_html' ), 10, 2 );
-
-        } elseif( WPLP_DISPLAY_TYPE == 'alt' ) {
+        if( WPLP_DISPLAY_TYPE == 'alt' ) {
 
             add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_style' ) );
 
             add_action( 'woocommerce_product_meta_end', array( $this, 'display_lowest_price_in_meta' ) );
+
+        } else {
+
+            add_filter( 'woocommerce_get_price_html', array( $this, 'get_price_html' ), 10, 2 );
 
         }
 
@@ -36,6 +35,11 @@ class Front {
         }
 
         $ts_30_days_ago = time() - 30 * 24 * 60 * 60;
+
+        if( WPLP_CALCULATE_TYPE == 'last_change' && ( $result = $wpdb->get_row( $wpdb->prepare( "SELECT timestamp FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end = 0", $object->get_id() ), ARRAY_A ) ) ) {
+
+            $ts_30_days_ago = $result['timestamp'] - 30 * 24 * 60 * 60;
+        }
 
         if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end > %d ORDER BY price ASC LIMIT 0, 1", $object->get_id(), $ts_30_days_ago ), ARRAY_A ) ) {
 
@@ -56,8 +60,16 @@ class Front {
         if ( '' === $product->get_price() ) {
             $price_html = apply_filters( 'woocommerce_empty_price_html', '', $product );
         } elseif ( $product->is_on_sale() ) {
-            $regular_price = $this->get_lowest_price( $product );
-            $price_html = wc_format_sale_price( wc_get_price_to_display( $product, array( 'price' => $regular_price ) ), wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+
+            $lowest_price_in_30_days = $this->get_lowest_price( $product );
+
+            if( WPLP_DISPLAY_TYPE == 'text' ) {
+                $price_html = '<span class="lowest_price">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ': <span class="lowest_amount">' . wc_price( $lowest_price_in_30_days ) . '</span></span><br />';
+                $price_html .= '<span class="actual_price">' . __( 'Actual price', 'lowest-price' ) . ': <span class="actual_amount">' . wc_price( $product->get_price() ) . '</span></span>';
+            } else {
+                $price_html = wc_format_sale_price( wc_get_price_to_display( $product, array( 'price' => $lowest_price_in_30_days ) ), wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+            }
+
         } else {
             $price_html = wc_price( wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
         }
@@ -92,15 +104,15 @@ class Front {
 
             }
 
-            $price = "<span class='js-variable-price' data-variations='" . json_encode($prices_arr) . "'>" . $prices_arr[ 0 ] . "</span>";
+            $price = '<span class="lowest_amount js-variable-price" data-variations=\'' . json_encode($prices_arr) . '\'>' . $prices_arr[ 0 ] . '</span>';
 
         } else {
 
-            $price = strip_tags( wc_price( $this->get_lowest_price( $product ) ) );
+            $price = '<span class="lowest_amount">' . strip_tags( wc_price( $this->get_lowest_price( $product ) ) ) . '</span>';
 
         }
 
-        echo '<span class="lowest_price">' . sprintf( __( 'Lowest price in last 30 days: %s', 'lowest-price' ), $price ) . '</span>';
+        echo '<span class="lowest_price">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ': ' . $price . '</span>';
     }
 
     public function wp_enqueue_style() {
