@@ -17,10 +17,6 @@ if ( ! defined( 'WPLP_DISPLAY_TYPE' ) ) {
     define( 'WPLP_DISPLAY_TYPE', 'regular' );
 }
 
-if ( ! defined( 'WPLP_CALCULATE_TYPE' ) ) {
-    define( 'WPLP_CALCULATE_TYPE', 'regular' );
-}
-
 class Lowest_Price {
 
     private $min_php = '5.6.0';
@@ -125,28 +121,30 @@ class Lowest_Price {
 
     }
 
-    public function variation_update( $variation_id ) {
+    public function update_price( $object_id, $new_price, $regular_price ) {
 
         global $wpdb;
-
-        $single_variation = new WC_Product_Variation( $variation_id );
-
-        $new_price = $single_variation->get_price();
 
         $last_price = array(
             'id' => 0,
             'price' => 0,
         );
 
-        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price_history_id AS id, price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end = 0", $variation_id ), ARRAY_A ) ) {
+        // GET LAST VALID PRICE
+
+        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price_history_id AS id, price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end = 0", $object_id ), ARRAY_A ) ) {
 
             $last_price = $result;
 
         }
 
+        // COMPARE IF PRICE IS CHANGED
+
         if( $new_price && ( $new_price != $last_price['price'] ) ) {
 
             if( $last_price['id'] ) {
+
+                // UPDATE "VALID TO" TIMESTAMP
 
                 $wpdb->query( 
                     $wpdb->prepare( 
@@ -158,13 +156,47 @@ class Lowest_Price {
 
             }
 
+            // SET LOWEST PRICE IN LAST 30 DAYS IN POSTMETA
+
+            update_post_meta( $object_id, '_lowest_price_30_days', self::get_lowest_price( $object_id, $regular_price ) );
+
+            // INSERT NEW PRICE
+
             $wpdb->insert("{$wpdb->prefix}price_history", array(
-                "product_id" => $variation_id,
+                "product_id" => $object_id,
                 "price" => $new_price,
                 "timestamp" => time(),
             ));
 
         }
+
+    }
+
+    public function variation_update( $variation_id ) {
+
+        $single_variation = new WC_Product_Variation( $variation_id );
+
+        $new_price = $single_variation->get_price();
+
+        $regular_price = $single_variation->get_regular_price();
+
+        $this->update_price( $variation_id, $new_price, $regular_price );
+
+    }
+
+    public function product_update( $product_id ) {
+
+        $product = wc_get_product( $product_id );
+
+        if( $product->get_type() == 'variable' ) {
+            return;
+        }
+
+        $new_price = $product->get_price();
+
+        $regular_price = $product->get_regular_price();
+
+        $this->update_price( $product_id, $new_price, $regular_price );
 
     }
 
@@ -176,7 +208,15 @@ class Lowest_Price {
 
         global $wpdb;
 
-        if( !$wpdb->get_row( $wpdb->prepare( "SELECT price_history_id FROM {$wpdb->prefix}price_history WHERE product_id = %d LIMIT 0, 1", $object->get_id() ), ARRAY_A ) ) {
+        // IF PRICE HISTORY DON'T HAVE ANY PRICE, SAVE PREVIOUS
+
+        if( !$wpdb->get_row( $wpdb->prepare( "SELECT price_history_id FROM {$wpdb->prefix}price_history WHERE product_id = %d LIMIT 0, 1", $object->get_id() ), ARRAY_A ) && $object->get_price() ) {
+
+            // INSERT REGULAR PRICE
+
+            update_post_meta( $object->get_id(), '_lowest_price_30_days', self::get_lowest_price( $object->get_id(), $object->get_regular_price() ) );
+
+            // INSERT ACTUAL PRICE
 
             $wpdb->insert("{$wpdb->prefix}price_history", array(
                 "product_id" => $object->get_id(),
@@ -188,50 +228,22 @@ class Lowest_Price {
 
     }
 
-    public function product_update( $product_id ) {
+    public static function get_lowest_price( $object_id, $price ) {
 
         global $wpdb;
 
-        $product = wc_get_product( $product_id );
+        $ts_30_days_ago = time() - 30 * 24 * 60 * 60;
 
-        if( $product->get_type() == 'variable' ) {
-            return;
-        }
+        // FETCH MIN PRICE IN LAST 30 DAYS FROM PRICE HISTORY DB TABLE
 
-        $new_price = $product->get_price();
+        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end > %d ORDER BY price ASC LIMIT 0, 1", $object_id, $ts_30_days_ago ), ARRAY_A ) ) {
 
-        $last_price = array(
-            'id' => 0,
-            'price' => 0,
-        );
-
-        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price_history_id AS id, price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end = 0", $product_id ), ARRAY_A ) ) {
-
-            $last_price = $result;
-
-        }
-
-        if( $new_price && ( $new_price != $last_price['price'] ) ) {
-
-            if( $last_price['id'] ) {
-
-                $wpdb->query( 
-                    $wpdb->prepare( 
-                        "UPDATE {$wpdb->prefix}price_history SET timestamp_end = %d WHERE price_history_id = %d",
-                        time(),
-                        $last_price['id']
-                    )
-                );
-
+            if( $result['price'] < $price ) {
+                $price = $result['price'];
             }
-
-            $wpdb->insert("{$wpdb->prefix}price_history", array(
-                "product_id" => $product_id,
-                "price" => $new_price,
-                "timestamp" => time(),
-            ));
-
         }
+
+        return $price;
     }
 }
 
@@ -239,5 +251,5 @@ function lowest_price() {
     return Lowest_Price::instance();
 }
 
-// Backwards compatibility
+// BACKWARDS COMPATIBILITY
 $GLOBALS['lowest-price'] = lowest_price();

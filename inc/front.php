@@ -25,7 +25,11 @@ class Front {
 
     public function get_lowest_price( $object ) {
 
-        global $wpdb;
+        if( $lowest_price_30_days = get_post_meta( $object->get_id(), '_lowest_price_30_days', true ) ) {
+            return $lowest_price_30_days;
+        }
+
+        // BACKWARDS COMPATIBILITY
 
         if( $object->get_type() == 'variable' && get_class( $object ) != 'WC_Product_Variation' ) {
             $prices = $object->get_variation_prices();
@@ -34,19 +38,7 @@ class Front {
             $price = $object->get_regular_price( 'lowest_price' );
         }
 
-        $ts_30_days_ago = time() - 30 * 24 * 60 * 60;
-
-        if( WPLP_CALCULATE_TYPE == 'last_change' && ( $result = $wpdb->get_row( $wpdb->prepare( "SELECT timestamp FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end = 0", $object->get_id() ), ARRAY_A ) ) ) {
-
-            $ts_30_days_ago = $result['timestamp'] - 30 * 24 * 60 * 60;
-        }
-
-        if( $result = $wpdb->get_row( $wpdb->prepare( "SELECT price FROM {$wpdb->prefix}price_history WHERE product_id = %d AND timestamp_end > %d ORDER BY price ASC LIMIT 0, 1", $object->get_id(), $ts_30_days_ago ), ARRAY_A ) ) {
-
-            if( $result['price'] < $price ) {
-                $price = $result['price'];
-            }
-        }
+        $price = Lowest_Price::get_lowest_price( $object->get_id(), $price );
 
         return $price;
     }

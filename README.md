@@ -19,7 +19,9 @@ Postoje i tumačenje da postoji izuzeće za prodaju na daljinu, ali još uvijek 
 
 ## Kako radi plugin?
 
-Prilikom svake promjene cijene zapisuje se aktualna cijena u zasebnu tablicu zajedno s trajanjem od-do. Prilikom prikaza cijene za proizvode na akciji, dohvaća se najniža cijena u zadnjih 30 dana.
+Prilikom svake promjene cijene zapisuje se aktualna cijena u zasebnu tablicu zajedno s trajanjem od-do. Osim toga, prilikom promjene cijene u postmeta tablicu zapisuje se najniža cijena koja je vrijedila za taj proizvod u zadnjih 30 dana.
+
+Prilikom prikaza cijene za proizvode na akciji, dohvaća se najniža cijena koja se primjenjivala tijekom razdoblja od 30 dana prije provedbe akcije.
 
 **Važno:** plugin ne zna za povijest cijena pa će se povijest izmjena početi stvarati nakon što se proizvodi / varijante ažuriraju prvi put. Kao najnižu cijenu u zadnjih 30 dana, ukoliko ne postoji niti jedna druga cijena, uzima se redovna cijena.
 
@@ -27,11 +29,6 @@ Plugin funkcionira za:
 
 - Jednostavne proizvode
 - Varijabilne proizvode
-
-Ukoliko želite dohvaćati cijenu za 30 dana od zadnje promjene cijene, u wp-config.php dodati liniju:
-```
-define( 'WPLP_CALCULATE_TYPE', 'last_change' );
-```
 
 
 ## Defaultni prikaz
@@ -72,5 +69,7 @@ Testovi su rađeni na clean instalaciji:
 - PHP 7.4 i 8.0
 
 ali ne bi trebalo biti problema niti s drugim verzijama i temama.
+
+Također je testirana i promjena cijena putem crona. Utjecaj na performanse trebao bi biti zanemariv.
 
 Ukoliko koristite specifične pluginove poput Subscriptiona ili customizirane teme, postoji mogućnost da ćete trebati prilagoditi plugin. Također, potrebno je pripaziti ukoliko cijene updateate izravno kroz bazu (npr. prilikom spajanja na vanjski ERP).
