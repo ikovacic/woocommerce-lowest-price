@@ -9,7 +9,7 @@ Prema izmjenama zakona o zaštiti potrošača koje nastupaju na snagu 28.5.2022.
 
 **Sada trebaju prikazivati:**
 
-- Najnižu cijenu u zadnjih 30 dana
+- Najnižu cijenu u zadnjih 30 dana (prije početka provedbe akcije)
 - Sniženu cijenu
 
 **Važno:** ovisni o promjenama cijene, može se dogoditi da prekrižena cijena (tj. najniža u zadnjih 30 dana) bude ista ili niža od aktualne. U slučaju pogrešno unešene cijene, potrebno je obrisati redak u wp_price_history tablici.
@@ -21,7 +21,7 @@ Prilikom svake promjene cijene zapisuje se aktualna cijena u zasebnu tablicu zaj
 
 Prilikom prikaza cijene za proizvode na akciji, dohvaća se najniža cijena koja se primjenjivala tijekom razdoblja od 30 dana prije provedbe akcije.
 
-**Važno:** plugin ne zna za povijest cijena pa će se povijest izmjena početi stvarati nakon što se proizvodi / varijante ažuriraju prvi put. Kao najnižu cijenu u zadnjih 30 dana, ukoliko ne postoji niti jedna druga cijena, uzima se redovna cijena.
+**Važno:** plugin ne poznaje povijest cijena pa će se povijest izmjena početi stvarati nakon što se proizvodi / varijante ažuriraju prvi put. Kao najnižu cijenu u zadnjih 30 dana, ukoliko ne postoji niti jedna druga cijena, uzima se redovna cijena.
 
 Plugin funkcionira za:
 
@@ -31,11 +31,27 @@ Plugin funkcionira za:
 
 ## Defaultni prikaz
 
+Defaultni prikaz ne radi izmjene na sučelju kako ne bi došlo do problema s prikazivanjem.
+
 ![alt text](https://api.applause.hr/lowest-price/01-regular-listing.png "Listing")
 
 ![alt text](https://api.applause.hr/lowest-price/02-regular-single.png "Single")
 
 ## Tekstualni prikaz
+
+**Prema tumačenju zakona, ovo je ispravna verzija prikaza.**
+
+Prihvatljivi prijevodi za “Lowest price in last 30 days”
+
+- Najniža cijena
+- Prethodno najniža cijena
+- Najniža cijena u prethodnih 30 dana
+- Naša najniža cijena
+
+Prihvatljivi prijevodi za “Actual price”
+
+- Snižena cijena
+- Akcijska cijena
 
 U wp-config.php dodati liniju:
 ```
@@ -47,6 +63,8 @@ define( 'WPLP_DISPLAY_TYPE', 'text' );
 ![alt text](https://api.applause.hr/lowest-price/04-text-single.png "Single")
 
 ## Alternativni prikaz
+
+Ovaj prikaz ne smatra se ispravnim.
 
 U wp-config.php dodati liniju:
 ```
