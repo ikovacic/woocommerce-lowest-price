@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Lowest Price
  * Description: Display lowest price in last 30 days
  * Plugin URI:  #
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Igor Kovacic
  * Author URI:  https://www.applause.hr
  * Text Domain: lowest-price
@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// @todo: move to settings
 if ( ! defined( 'WPLP_DISPLAY_TYPE' ) ) {
     define( 'WPLP_DISPLAY_TYPE', 'regular' );
 }
@@ -189,22 +190,18 @@ class Lowest_Price {
         $product = wc_get_product( $product_id );
 
         if( $product->get_type() == 'variable' ) {
-            return;
+            $regular_price = $product->get_variation_regular_price( 'min' );
+        } else {
+            $regular_price = $product->get_regular_price();
         }
 
         $new_price = $product->get_price();
-
-        $regular_price = $product->get_regular_price();
 
         $this->update_price( $product_id, $new_price, $regular_price );
 
     }
 
     public function object_before_update( $object ) {
-
-        if( $object->get_type() == 'variable' ) {
-            return;
-        }
 
         global $wpdb;
 
@@ -214,7 +211,13 @@ class Lowest_Price {
 
             // INSERT REGULAR PRICE
 
-            update_post_meta( $object->get_id(), '_lowest_price_30_days', self::get_lowest_price( $object->get_id(), $object->get_regular_price() ) );
+            if( $object->get_type() == 'variable' ) {
+                $regular_price = $object->get_variation_regular_price( 'min' );
+            } else {
+                $regular_price = $object->get_regular_price();
+            }
+
+            update_post_meta( $object->get_id(), '_lowest_price_30_days', self::get_lowest_price( $object->get_id(), $regular_price ) );
 
             // INSERT ACTUAL PRICE
 

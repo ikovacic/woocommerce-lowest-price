@@ -27,6 +27,8 @@ class install {
 
         dbDelta( $create_tbl );
 
+        // @todo: save initial prices for products on sale?
+
     }
 
 }

@@ -88,4 +88,6 @@ ali ne bi trebalo biti problema niti s drugim verzijama i temama.
 
 Također je testirana i promjena cijena putem crona. Utjecaj na performanse trebao bi biti zanemariv.
 
+Plugin je kompatibilan s [Pluginom za prikaz informativne cijene u Eurima](https://media-x.hr/woocommerce-prikaz-informativne-cijene-u-eurima/).
+
 Ukoliko koristite specifične pluginove poput Subscriptiona ili customizirane teme, postoji mogućnost da ćete trebati prilagoditi plugin. Također, potrebno je pripaziti ukoliko cijene updateate izravno kroz bazu (npr. prilikom spajanja na vanjski ERP).

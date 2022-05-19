@@ -1,7 +1,6 @@
 <?php
 namespace Lowest_Price;
 use Lowest_Price;
-use WC_Product_Variation;
 
 class Front {
 
@@ -23,47 +22,79 @@ class Front {
 
     }
 
-    public function get_lowest_price( $object ) {
+    public function get_lowest_price( $object_id, $regular_price ) {
 
-        if( $lowest_price_30_days = get_post_meta( $object->get_id(), '_lowest_price_30_days', true ) ) {
+        if( $lowest_price_30_days = get_post_meta( $object_id, '_lowest_price_30_days', true ) ) {
             return $lowest_price_30_days;
         }
 
-        // BACKWARDS COMPATIBILITY
-
-        if( $object->get_type() == 'variable' && get_class( $object ) != 'WC_Product_Variation' ) {
-            $prices = $object->get_variation_prices();
-            $price = $prices['regular_price'];
-        } else {
-            $price = $object->get_regular_price( 'lowest_price' );
-        }
-
-        $price = Lowest_Price::get_lowest_price( $object->get_id(), $price );
-
-        return $price;
+        return $regular_price;
     }
 
     public function get_price_html( $price_html, $product ) {
 
-        if( is_admin() || $product->get_type() == 'variable' ) {
+
+        if( is_admin() ) {
             return $price_html;
         }
 
-        if ( '' === $product->get_price() ) {
-            $price_html = apply_filters( 'woocommerce_empty_price_html', '', $product );
-        } elseif ( $product->is_on_sale() ) {
+        // VARIABLE PRODUCTS
+        if( $product->get_type() == 'variable' ) {
 
-            $lowest_price_in_30_days = $this->get_lowest_price( $product );
+            $prices = $product->get_variation_prices( true );
 
-            if( WPLP_DISPLAY_TYPE == 'text' ) {
-                $price_html = '<span class="lowest_price">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ': <span class="lowest_amount">' . wc_price( $lowest_price_in_30_days ) . '</span></span><br />';
-                $price_html .= '<span class="actual_price">' . __( 'Actual price', 'lowest-price' ) . ': <span class="actual_amount">' . wc_price( $product->get_price() ) . '</span></span>';
+            if ( empty( $prices['price'] ) ) {
+                $price = apply_filters( 'woocommerce_variable_empty_price_html', '', $product );
             } else {
-                $price_html = wc_format_sale_price( wc_get_price_to_display( $product, array( 'price' => $lowest_price_in_30_days ) ), wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+                $min_price     = current( $prices['price'] );
+                $max_price     = end( $prices['price'] );
+                $min_reg_price = current( $prices['regular_price'] );
+                $max_reg_price = end( $prices['regular_price'] );
+
+                // IF RANGE - RETURN AS IS
+                // EVERY VARIANT DISPLAYS IT'S PRICE
+                if ( $min_price !== $max_price ) {
+                    $price_html = wc_format_price_range( $min_price, $max_price );
+
+                // IF PRICES ARE THE SAME && PRODUCT IS ON SALE
+                } elseif ( $product->is_on_sale() && $min_reg_price === $max_reg_price ) {
+
+                    $lowest_price_in_30_days = $this->get_lowest_price( $product->get_id(), $min_reg_price );
+
+                    if( WPLP_DISPLAY_TYPE == 'text' ) {
+                        $price_html = '<span class="lowest_price">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ': <span class="lowest_amount">' . wc_price( $lowest_price_in_30_days ) . '</span></span><br />';
+                        $price_html .= '<span class="actual_price">' . __( 'Actual price', 'lowest-price' ) . ': <span class="actual_amount">' . wc_price( $product->get_price() ) . '</span></span>';
+                    } else {
+                        $price_html = wc_format_sale_price( wc_get_price_to_display( $product, array( 'price' => $lowest_price_in_30_days ) ), wc_price( $min_price ) ) . $product->get_price_suffix();
+                    }
+
+                // NOT ON SALE, SAME PRICES FOR ALL VARIANTS, RETURN PRICE
+                } else {
+                    $price_html = wc_price( $min_price ) . $product->get_price_suffix();
+                }
+
             }
 
+        // OTHER PRODUCTS (SIMPLE, VARIANTS, GROUPED, ETC.)
         } else {
-            $price_html = wc_price( wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+
+            if ( '' === $product->get_price() ) {
+                $price_html = apply_filters( 'woocommerce_empty_price_html', '', $product );
+            } elseif ( $product->is_on_sale() ) {
+
+                $lowest_price_in_30_days = $this->get_lowest_price( $product->get_id(), $product->get_regular_price() );
+
+                if( WPLP_DISPLAY_TYPE == 'text' ) {
+                    $price_html = '<span class="lowest_price">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ': <span class="lowest_amount">' . wc_price( $lowest_price_in_30_days ) . '</span></span><br />';
+                    $price_html .= '<span class="actual_price">' . __( 'Actual price', 'lowest-price' ) . ': <span class="actual_amount">' . wc_price( $product->get_price() ) . '</span></span>';
+                } else {
+                    $price_html = wc_format_sale_price( wc_get_price_to_display( $product, array( 'price' => $lowest_price_in_30_days ) ), wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+                }
+
+            } else {
+                $price_html = wc_price( wc_get_price_to_display( $product ) ) . $product->get_price_suffix();
+            }
+
         }
 
         return $price_html;
@@ -79,28 +110,36 @@ class Front {
 
         if( $product->get_type() == 'variable' ) {
 
-            $variations = $product->get_children();
+            $prices = $product->get_variation_prices( true );
 
-            $prices_arr = array();
+            $min_price     = current( $prices['price'] );
+            $max_price     = end( $prices['price'] );
+            $min_reg_price = current( $prices['regular_price'] );
+            $max_reg_price = end( $prices['regular_price'] );
 
-            foreach ( $variations as $variation ) {
+            if( $min_reg_price == $max_reg_price && $min_price == $max_price ) {
 
-                $single_variation = new WC_Product_Variation( $variation );
+                $price = '<span class="lowest_amount">' . strip_tags( wc_price( $this->get_lowest_price( $product->get_id(), $min_reg_price ) ) ) . '</span>';
+            } else {
 
-                $prices_arr[ 0 ] = __( 'N/A', 'lowest-price' );
-                if( $single_variation->is_on_sale() ) {
-                    $prices_arr[ $variation ] = strip_tags( wc_price( $this->get_lowest_price( $single_variation ) ) );
-                } else {
-                    $prices_arr[ $variation ] = __( 'N/A', 'lowest-price' );
+                $prices_arr = array(
+                    __( 'N/A', 'lowest-price' ),
+                );
+
+                foreach ( $prices[ 'price' ] as $k => $value) {
+                    if( $prices[ 'regular_price' ][ $k ] > $value ) {
+                        $prices_arr[ $k ] = strip_tags( wc_price( $this->get_lowest_price( $k, $prices[ 'regular_price' ][ $k ] ) ) );
+                    } else {
+                        $prices_arr[ $k ] = __( 'N/A', 'lowest-price' );
+                    }
                 }
+                $price = '<span class="lowest_amount js-variable-price" data-variations=\'' . json_encode($prices_arr) . '\'>' . $prices_arr[ 0 ] . '</span>';
 
             }
 
-            $price = '<span class="lowest_amount js-variable-price" data-variations=\'' . json_encode($prices_arr) . '\'>' . $prices_arr[ 0 ] . '</span>';
-
         } else {
 
-            $price = '<span class="lowest_amount">' . strip_tags( wc_price( $this->get_lowest_price( $product ) ) ) . '</span>';
+            $price = '<span class="lowest_amount">' . strip_tags( wc_price( $this->get_lowest_price( $product->get_id(), $product->get_regular_price() ) ) ) . '</span>';
 
         }
 
