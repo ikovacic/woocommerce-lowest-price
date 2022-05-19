@@ -53,7 +53,7 @@ Prihvatljivi prijevodi za “Actual price”
 - Snižena cijena
 - Akcijska cijena
 
-U wp-config.php dodati liniju:
+U wp-config.php (nakon konstante WP_DEBUG) dodati liniju:
 ```
 define( 'WPLP_DISPLAY_TYPE', 'text' );
 ```
@@ -66,7 +66,7 @@ define( 'WPLP_DISPLAY_TYPE', 'text' );
 
 Ovaj prikaz ne smatra se ispravnim.
 
-U wp-config.php dodati liniju:
+U wp-config.php (nakon konstante WP_DEBUG) dodati liniju:
 ```
 define( 'WPLP_DISPLAY_TYPE', 'alt' );
 ```
