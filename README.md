@@ -99,5 +99,5 @@ Ukoliko koristite specifične pluginove poput Subscriptiona ili customizirane te
 - Dodana podrška za ispis cijena s PDV-om (ukoliko se unose bez PDV-a)
 - Optimizacije koda
 - Prijevodi
-- Omogućeno da varijabilni proizvodi na listi također prikazuju cijenu (dodati `define( 'WPLP_VARIANT_LOOP', 'min' );` u wp-config.php)
+- Omogućeno da varijabilni proizvodi na listi također prikazuju najnižu cijenu umjesto raspona (dodati `define( 'WPLP_VARIANT_LOOP', 'min' );` u wp-config.php)
 - Prilikom editiranja proizvoda vidljiva je povijest kretanja cijena
