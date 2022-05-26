@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Lowest Price
  * Description: Display lowest price in last 30 days
  * Plugin URI:  #
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      Igor Kovacic
  * Author URI:  https://www.applause.hr
  * Text Domain: lowest-price
@@ -16,6 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 // @todo: move to settings
 if ( ! defined( 'WPLP_DISPLAY_TYPE' ) ) {
     define( 'WPLP_DISPLAY_TYPE', 'regular' );
+}
+
+if ( ! defined( 'WPLP_VARIANT_LOOP' ) ) {
+    define( 'WPLP_VARIANT_LOOP', 'range' );
 }
 
 class Lowest_Price {
@@ -120,6 +124,75 @@ class Lowest_Price {
         add_action( 'woocommerce_before_product_object_save', array( $this, 'object_before_update' ) );
         add_action( 'woocommerce_before_variation_object_save', array( $this, 'object_before_update' ) );
 
+        add_action( 'add_meta_boxes_product', array( $this, 'show_price_history' ) );
+
+    }
+
+    public function show_price_history() {
+
+        add_meta_box( 'lowest_price_history', __( 'Price history (30 days)', 'lowest-price' ), array( $this, 'price_history' ), 'product', 'normal', 'low' );
+
+    }
+
+    public function price_history( $product ) {
+
+        global $wpdb;
+
+        $ts_30_days_ago = time() - 30 * 24 * 60 * 60;
+
+        $product_ids = array( $product->ID );
+
+        $_product = wc_get_product( $product->ID );
+
+        if( $_product->get_type() == 'variable' && $_product->get_children()) {
+
+            $product_ids = array_merge( $product_ids, $_product->get_children() );
+        }
+
+        ?>
+
+        <style>
+            .price_history { text-align: right; min-width: 400px; border: 1px solid #ddd; border-collapse: collapse; }
+            .price_history th, .price_history td { padding: 4px 10px; margin: 0; }
+        </style>
+
+
+        <?php foreach( $product_ids as $product_id ) {
+
+            echo '<h3>' . __( 'Product', 'lowest-price' ) . ' #' . $product_id .'</h3>';
+
+            if( $results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}price_history WHERE product_id = %d AND ( timestamp_end > %d OR timestamp_end = 0 ) ORDER BY timestamp DESC", $product_id, $ts_30_days_ago ), ARRAY_A ) ) {
+
+                ?>
+
+                <table class="price_history">
+                    <thead>
+                        <tr>
+                            <th><?php _e( 'Price', 'lowest-price' ); ?></th>
+                            <th><?php _e( 'Valid from', 'lowest-price' ); ?></th>
+                            <th><?php _e( 'Valid to', 'lowest-price' ); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach( $results as $k => $result ) : ?>
+                        <tr<?php if( $k%2 == 0 ) : ?> class="alternate"<?php endif; ?>>
+                            <td><?php echo wc_price( $result['price'] ); ?></td>
+                            <td><?php echo $result['timestamp'] ? wp_date( 'd.m.Y. H:i:s', $result['timestamp'] ) : '-'; ?></td>
+                            <td><?php echo $result['timestamp_end'] ? wp_date( 'd.m.Y. H:i:s', $result['timestamp_end'] ) : __( 'Active now', 'lowest-price' ); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <?php
+
+            } else {
+
+                echo '<p>' . __( 'No price history yet', 'lowest-price' ) . '</p>';
+            }
+
+        }
+
     }
 
     public function update_price( $object_id, $new_price, $regular_price ) {
@@ -157,7 +230,7 @@ class Lowest_Price {
 
             }
 
-            // SET LOWEST PRICE IN LAST 30 DAYS IN POSTMETA
+            // SAVE LOWEST PRICE IN LAST 30 DAYS TO POSTMETA
 
             update_post_meta( $object_id, '_lowest_price_30_days', self::get_lowest_price( $object_id, $regular_price ) );
 

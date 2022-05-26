@@ -91,3 +91,13 @@ Također je testirana i promjena cijena putem crona. Utjecaj na performanse treb
 Plugin je kompatibilan s [Pluginom za prikaz informativne cijene u Eurima](https://media-x.hr/woocommerce-prikaz-informativne-cijene-u-eurima/).
 
 Ukoliko koristite specifične pluginove poput Subscriptiona ili customizirane teme, postoji mogućnost da ćete trebati prilagoditi plugin. Također, potrebno je pripaziti ukoliko cijene updateate izravno kroz bazu (npr. prilikom spajanja na vanjski ERP).
+
+## Što je novo u verziji 1.0.2?
+
+- Povećan priroritet hooka za ispis cijena (10 > 1000)
+- Dodana podrška za price sufix
+- Dodana podrška za ispis cijena s PDV-om (ukoliko se unose bez PDV-a)
+- Optimizacije koda
+- Prijevodi
+- Omogućeno da varijabilni proizvodi na listi također prikazuju cijenu (dodati `define( 'WPLP_VARIANT_LOOP', 'min' );` u wp-config.php)
+- Prilikom editiranja proizvoda vidljiva je povijest kretanja cijena

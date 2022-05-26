@@ -1,0 +1,93 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Lowest Price\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-26 11:13+0000\n"
+"PO-Revision-Date: 2022-05-26 17:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: Hrvatski\n"
+"Language: hr\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
+"n%10<=4 &&(n%100<10||n%100 >= 20)? 1 : 2;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.2; wp-6.0\n"
+"X-Domain: lowest-price"
+
+#. URI of the plugin
+msgid "#"
+msgstr ""
+
+#: lowest-price.php:101
+#, php-format
+msgid ""
+"<strong>WooCommerce Lowest Price</strong> requires PHP <strong>%s</strong> "
+"or greater."
+msgstr ""
+"<strong>WooCommerce Lowest Price</strong> zajtijeva PHP verziju <strong>"
+"%s</strong> ili veću."
+
+#: lowest-price.php:181
+msgid "Active now"
+msgstr "Trenutno aktivno"
+
+#: inc/front.php:85
+msgid "Actual price"
+msgstr "Snižena cijena"
+
+#. Description of the plugin
+msgid "Display lowest price in last 30 days"
+msgstr ""
+"Prikaz najniže cijene u zadnjih 30 dana prije početka posebnog oblika "
+"prodaje (akcije)"
+
+#. Author URI of the plugin
+msgid "https://www.applause.hr"
+msgstr "https://www.applause.hr"
+
+#. Author of the plugin
+msgid "Igor Kovacic"
+msgstr "Igor Kovacic"
+
+#: inc/front.php:84 inc/front.php:154
+msgid "Lowest price in last 30 days"
+msgstr "Najniža cijena"
+
+#: inc/front.php:124 inc/front.php:137
+msgid "N/A"
+msgstr "N/A"
+
+#: lowest-price.php:191
+msgid "No price history yet"
+msgstr "Nema povijesti cijena"
+
+#: lowest-price.php:171
+msgid "Price"
+msgstr "Cijena"
+
+#: lowest-price.php:133
+msgid "Price history (30 days)"
+msgstr "Povijest cijena (zadnjih 30 dana)"
+
+#: lowest-price.php:162
+msgid "Product"
+msgstr "Proizvod"
+
+#: lowest-price.php:172
+msgid "Valid from"
+msgstr "Vrijedi od"
+
+#: lowest-price.php:173
+msgid "Valid to"
+msgstr "Vrijedi do"
+
+#. Name of the plugin
+msgid "WooCommerce Lowest Price"
+msgstr "WooCommerce Najniža cijena"
+
+#: lowest-price.php:100
+#, php-format
+msgid "Your installed PHP Version is: %s. "
+msgstr "Vaša verzija PHP-a: %s. "
