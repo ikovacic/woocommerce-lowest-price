@@ -81,8 +81,8 @@ class Front {
 
         if( WPLP_DISPLAY_TYPE == 'text' ) {
 
-            $price_html = '<span class="lowest_price">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ': <span class="lowest_amount">' . wc_price( $lowest_price_in_30_days ) .  $product->get_price_suffix() . '</span></span><br />';
-            $price_html .= '<span class="actual_price">' . __( 'Actual price', 'lowest-price' ) . ': <span class="actual_amount">' . wc_price( $actual_price ) . $product->get_price_suffix() . '</span></span>';
+            $price_html = '<span class="lowest_price"><span class="text">' . __( 'Lowest price in last 30 days', 'lowest-price' ) . ':</span> <span class="lowest_amount">' . wc_price( $lowest_price_in_30_days ) .  $product->get_price_suffix() . '</span></span><br />';
+            $price_html .= '<span class="actual_price"><span class="text">' . __( 'Actual price', 'lowest-price' ) . ':</span> <span class="actual_amount">' . wc_price( $actual_price ) . $product->get_price_suffix() . '</span></span>';
 
         } else {
 
