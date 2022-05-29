@@ -116,7 +116,7 @@ class Lowest_Price {
 
     public function woocommerce_missing_notice() {
         if( is_admin() ){
-            echo '<div class="error is-dismissible"><p>' . __( '<strong>WooCommerce Lowest Price</strong> requires WooCommerce plugin to be installed and active.', 'lowest-price' ) . '</p></div>';
+            echo '<div class="error"><p>' . __( '<strong>WooCommerce Lowest Price</strong> requires WooCommerce plugin to be installed and active.', 'lowest-price' ) . '</p></div>';
         }  
     }
 
