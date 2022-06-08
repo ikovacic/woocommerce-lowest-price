@@ -198,6 +198,7 @@ class Lowest_Price {
     public function update_price( $object_id, $new_price, $regular_price ) {
 
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
+            delete_post_meta( $object_id, '_lowest_price_30_days' );
             return;
         }
 
@@ -281,6 +282,7 @@ class Lowest_Price {
     public function object_before_update( $object ) {
 
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
+            delete_post_meta( $object->get_id(), '_lowest_price_30_days' );
             return;
         }
 
