@@ -197,6 +197,10 @@ class Lowest_Price {
 
     public function update_price( $object_id, $new_price, $regular_price ) {
 
+        if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
+            return;
+        }
+
         global $wpdb;
 
         $last_price = array(
@@ -275,6 +279,10 @@ class Lowest_Price {
     }
 
     public function object_before_update( $object ) {
+
+        if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
+            return;
+        }
 
         global $wpdb;
 
