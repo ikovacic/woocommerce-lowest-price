@@ -118,6 +118,9 @@ class Lowest_Price {
 
     public function init_actions() {
 
+        add_filter( 'woocommerce_duplicate_product_exclude_meta', array( $this, 'exclude_meta' ) );
+        add_action( 'woocommerce_product_duplicate_before_save', array( $this, 'delete_child_meta' ), 999, 2 );
+        
         add_action( 'woocommerce_update_product', array( $this, 'product_update' ) );
         add_action( 'woocommerce_update_product_variation', array( $this, 'variation_update' ) );
 
@@ -195,11 +198,20 @@ class Lowest_Price {
 
     }
 
+    public function exclude_meta() {
+        return array( '_lowest_price_30_days', '_regular_price', '_sale_price', '_min_variation_price', '_max_variation_price', '_min_variation_regular_price', '_max_variation_regular_price', '_min_variation_sale_price', '_max_variation_sale_price' );
+    }
+
+    public function delete_child_meta( $child_duplicate, $child ) {
+        foreach ( $this->exclude_meta() as $meta_key ) {
+            $child_duplicate->delete_meta_data( $meta_key );
+        }
+    }
+
     public function update_price( $object_id, $new_price, $regular_price ) {
 
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
-            delete_post_meta( $object_id, '_lowest_price_30_days' );
-            return;
+            return true;
         }
 
         global $wpdb;
@@ -282,8 +294,7 @@ class Lowest_Price {
     public function object_before_update( $object ) {
 
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
-            delete_post_meta( $object->get_id(), '_lowest_price_30_days' );
-            return;
+            return true;
         }
 
         global $wpdb;
