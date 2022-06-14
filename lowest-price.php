@@ -200,10 +200,12 @@ class Lowest_Price {
     }
 
     public function update_price( $object_id, $new_price, $regular_price ) {
-
+        // On product copy, delete lowest price meta, and don't create DB entry.
+        $object = wc_get_product( $object_id );
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
             foreach ( $this->exclude_meta() as $meta_key ) {
-                delete_post_meta( $object_id, $meta_key );
+                $object->delete_meta_data( $meta_key );
+                // delete_post_meta( $object_id, $meta_key );
             }
             return true;
         }
@@ -286,13 +288,18 @@ class Lowest_Price {
     }
 
     public function object_before_update( $object ) {
-
+        // When product duplicated.
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
-            $object->set_price( null );
-            $object->set_regular_price( null );
-            $object->set_sale_price( null );
+            // Only for variations - don't duplicate prices.
+            if ( 'variation' === $object->get_type() ) {
+                $object->set_price( null );
+                $object->set_regular_price( null );
+                $object->set_sale_price( null );
+            }
+            // Delete meta for variable prices and meta fof lowest price.
             foreach ( $this->exclude_meta() as $meta_key ) {
-                delete_post_meta( $object->get_id(), $meta_key );
+                $object->delete_meta_data( $meta_key );
+                // delete_post_meta( $object->get_id(), $meta_key );
             }
             return true;
         }
