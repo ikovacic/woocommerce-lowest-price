@@ -205,7 +205,6 @@ class Lowest_Price {
         if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
             foreach ( $this->exclude_meta() as $meta_key ) {
                 $object->delete_meta_data( $meta_key );
-                // delete_post_meta( $object_id, $meta_key );
             }
             return true;
         }
@@ -299,7 +298,6 @@ class Lowest_Price {
             // Delete meta for variable prices and meta fof lowest price.
             foreach ( $this->exclude_meta() as $meta_key ) {
                 $object->delete_meta_data( $meta_key );
-                // delete_post_meta( $object->get_id(), $meta_key );
             }
             return true;
         }
