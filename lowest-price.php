@@ -117,7 +117,7 @@ class Lowest_Price {
     }
 
     public function init_actions() {
-
+        
         add_action( 'woocommerce_update_product', array( $this, 'product_update' ) );
         add_action( 'woocommerce_update_product_variation', array( $this, 'variation_update' ) );
 
@@ -195,7 +195,19 @@ class Lowest_Price {
 
     }
 
+    public function exclude_meta() {
+        return array( '_lowest_price_30_days', '_min_variation_price', '_max_variation_price', '_min_variation_regular_price', '_max_variation_regular_price', '_min_variation_sale_price', '_max_variation_sale_price' );
+    }
+
     public function update_price( $object_id, $new_price, $regular_price ) {
+        // On product copy, delete lowest price meta, and don't create DB entry.
+        $object = wc_get_product( $object_id );
+        if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
+            foreach ( $this->exclude_meta() as $meta_key ) {
+                $object->delete_meta_data( $meta_key );
+            }
+            return true;
+        }
 
         global $wpdb;
 
@@ -275,6 +287,20 @@ class Lowest_Price {
     }
 
     public function object_before_update( $object ) {
+        // When product duplicated.
+        if ( did_action( 'woocommerce_product_duplicate_before_save' ) ) {
+            // Only for variations - don't duplicate prices.
+            if ( 'variation' === $object->get_type() ) {
+                $object->set_price( null );
+                $object->set_regular_price( null );
+                $object->set_sale_price( null );
+            }
+            // Delete meta for variable prices and meta fof lowest price.
+            foreach ( $this->exclude_meta() as $meta_key ) {
+                $object->delete_meta_data( $meta_key );
+            }
+            return true;
+        }
 
         global $wpdb;
 
