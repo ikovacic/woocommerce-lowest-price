@@ -278,7 +278,7 @@ class Lowest_Price {
 
         global $wpdb;
 
-        // IF PRICE HISTORY DON'T HAVE ANY PRICE, SAVE PREVIOUS
+        // IF PRICE HISTORY DOESN'T CONTAIN ANY PRICE, SAVE PREVIOUS
 
         if( !$wpdb->get_row( $wpdb->prepare( "SELECT price_history_id FROM {$wpdb->prefix}price_history WHERE product_id = %d LIMIT 0, 1", $object->get_id() ), ARRAY_A ) && $object->get_price() ) {
 
