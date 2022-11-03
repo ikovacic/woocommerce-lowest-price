@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: WooCommerce Lowest Price\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-26 11:13+0000\n"
-"PO-Revision-Date: 2022-05-27 08:04+0000\n"
-"Last-Translator: Haddad.hr Admin\n"
+"PO-Revision-Date: 2022-05-26 17:59+0000\n"
+"Last-Translator: \n"
 "Language-Team: Hrvatski\n"
 "Language: hr\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10 >= 2 && "
@@ -35,7 +35,7 @@ msgstr "Trenutno aktivno"
 
 #: inc/front.php:85
 msgid "Actual price"
-msgstr "Cijena sa popustom"
+msgstr "Snižena cijena"
 
 #. Description of the plugin
 msgid "Display lowest price in last 30 days"
@@ -53,7 +53,7 @@ msgstr "Igor Kovacic"
 
 #: inc/front.php:84 inc/front.php:154
 msgid "Lowest price in last 30 days"
-msgstr "Najniža cijena u zadnjih 30 dana"
+msgstr "Najniža cijena"
 
 #: inc/front.php:124 inc/front.php:137
 msgid "N/A"
