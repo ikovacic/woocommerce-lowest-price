@@ -15,6 +15,22 @@ Prema izmjenama zakona o zaštiti potrošača koje nastupaju na snagu 28.5.2022.
 **Važno:** ovisni o promjenama cijene, može se dogoditi da prekrižena cijena (tj. najniža u zadnjih 30 dana) bude ista ili niža od aktualne. U slučaju pogrešno unešene cijene, potrebno je obrisati redak u wp_price_history tablici.
 
 
+## Konverzija cijena nakon 1.1.2022.
+
+Kako biste promijenili cijene nakon što EURO postane službena valuta, potrebno je izvršiti sljedeće upite: 
+```
+UPDATE wp_price_history SET price = price / 7.53450;
+UPDATE wp_postmeta SET meta_value = meta_value / 7.53450 WHERE meta_key = '_lowest_price_30_days';
+```
+
+Ukoliko koristite db prefiks različit od “wp_”, potrebno je izmijeniti upite.
+
+Za pretvorbu cijena i čuvanje s 2 decimalna mjesta, možete koristiti
+```
+UPDATE wp_price_history SET price = ROUND((price/7.53450), 2);
+UPDATE wp_postmeta SET meta_value = ROUND((meta_value/7.53450), 2) WHERE meta_key = '_lowest_price_30_days';
+```
+
 ## Kako radi plugin?
 
 Prilikom svake promjene cijene zapisuje se aktualna cijena u zasebnu tablicu zajedno s trajanjem od-do. Osim toga, prilikom promjene cijene u postmeta tablicu zapisuje se najniža cijena koja je vrijedila za taj proizvod u zadnjih 30 dana.
