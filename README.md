@@ -17,7 +17,7 @@ Prema izmjenama zakona o zaštiti potrošača koje nastupaju na snagu 28.5.2022.
 
 ## Konverzija cijena nakon 1.1.2022.
 
-Kako biste promijenili cijene nakon što EURO postane službena valuta, potrebno je izvršiti sljedeće upite: 
+Kako biste promijenili cijene vezane uz ovaj plugin nakon što EURO postane službena valuta, potrebno je izvršiti sljedeće upite: 
 ```
 UPDATE wp_price_history SET price = price / 7.53450;
 UPDATE wp_postmeta SET meta_value = meta_value / 7.53450 WHERE meta_key = '_lowest_price_30_days';
