@@ -44,6 +44,14 @@ class Lowest_Price {
             return;
         }
 
+        /**
+         * Check if WooCommerce is active
+         */
+        if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+            add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
+            return;
+        }
+
         $this->define_constants();
         $this->includes();
         $this->init_hooks();
@@ -104,6 +112,12 @@ class Lowest_Price {
             <p><?php printf( $error ); ?></p>
         </div>
         <?php
+    }
+
+    public function woocommerce_missing_notice() {
+        if( is_admin() ){
+            echo '<div class="error"><p>' . __( '<strong>WooCommerce Lowest Price</strong> requires WooCommerce plugin to be installed and active.', 'lowest-price' ) . '</p></div>';
+        }  
     }
 
     public static function log( $log ) {
