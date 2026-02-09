@@ -1,5 +1,12 @@
 # WooCommerce - Najniža cijena u zadnjih 30 dana
 
+> #### Nova verzija plugina ⚠️
+>
+> Kolega Borko Livić se potrudio i napravio značajna poboljšanja ovog plugina (postavke, uređivanje povijesti, graf i još puno toga).
+> Detalji i sam plugin dostupan je [ovdje](https://media-x.hr/woocommerce-lowest-price-2-0-najniza-cijena-u-30-dana-omnibus/).
+> Nova verzija kompatibilna je s ovom verzijom.
+
+
 Prema izmjenama zakona o zaštiti potrošača koje nastupaju na snagu 28.5.2022. prilikom akcija je potrebno iskazivati najnižu cijenu u zadnjih 30 dana za određeni proizvod.
 
 **Ranije su web trgovine za vrijeme akcija prikazivale:**
