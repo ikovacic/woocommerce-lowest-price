@@ -1,8 +1,7 @@
 # WooCommerce - Najniža cijena u zadnjih 30 dana
 
 > [!IMPORTANT]
-> **Nova verzija plugina**
-> Kolega Borko Livić se potrudio i napravio značajna poboljšanja ovog plugina (postavke, uređivanje povijesti, graf i još puno toga).
+> **Nova verzija plugina:** Kolega Borko Livić se potrudio i napravio značajna poboljšanja ovog plugina (postavke, uređivanje povijesti, graf i još puno toga).
 > Detalji i sam plugin dostupan je [ovdje](https://media-x.hr/woocommerce-lowest-price-2-0-najniza-cijena-u-30-dana-omnibus/).
 > Nova verzija kompatibilna je s ovom verzijom.
 
